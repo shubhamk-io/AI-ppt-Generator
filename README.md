@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Welcome to your new TanStack Start app! 
 
 # Getting Started
@@ -202,3 +203,6 @@ Files prefixed with `demo` can be safely deleted. They are there to provide a st
 You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
 
 For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+=======
+# AI-ppt-Generator
+>>>>>>> d256bec793fbfa066c69011c02d1f71bd445ecad
