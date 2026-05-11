@@ -35,7 +35,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className='font-sans antialiased bg-background text-foreground selection:bg-primary/20'>
         {children}
         <Toaster />
         <TanStackDevtools

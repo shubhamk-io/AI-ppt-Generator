@@ -1,12 +1,16 @@
-import { Button } from '#/components/ui/button'
+
+import ThemeToggle from '#/components/ui/Theme-toggle'
+import { authClient } from '#/lib/auth-client'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({ component: Home })
 
 function Home() {
+  const {data} = authClient.useSession()
+  console.log(data)
   return (
   <div>
-    <Button />
+    <ThemeToggle />
   </div>
   )
 }
