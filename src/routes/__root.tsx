@@ -1,9 +1,10 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import appCss from '../styles.css?url'
 import { Toaster } from 'sonner'
+import Navbar from '#/components/Navbar'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -26,8 +27,18 @@ export const Route = createRootRoute({
       },
     ],
   }),
+  component:RootLayout,
   shellComponent: RootDocument,
 })
+
+function RootLayout (){
+  return (
+    <div className='min-h-svh'>
+      <Navbar />
+      <Outlet />
+    </div>
+  )
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
