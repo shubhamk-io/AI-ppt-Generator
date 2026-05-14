@@ -70,7 +70,7 @@ export default function Navbar() {
               </div>
 
               <span className="text-lg font-semibold tracking-tight">
-                PPT
+                IntelliSlides
                 <span className="bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
                   .AI
                 </span>

@@ -5,23 +5,25 @@ import { getRequestHeaders } from "@tanstack/react-start/server";
 import { redirect } from "@tanstack/react-router";
 
 
+export const authMiddleware = createMiddleware({ type: "request" }).server(
+    async ({ request, next }) => {
 
+        const { pathname } = new URL(request.url)
+        const headers = getRequestHeaders();
 
-export const authMiddleware = createMiddleware({type:"request"}).server(
-    async ({request,next }) => {
+        const session = await auth.api.getSession({ headers })
 
-        const {pathname} = new URL(request.url)
-const headers = getRequestHeaders();
+        if (isLoginPath(pathname)){
+            if(session)throw redirect({to:"/"});
+            return next()
+        }
+        
 
-const session = await auth.api.getSession({headers})
+        if (isPublicPath(pathname)) return next()
 
-if(isLoginPath(pathname) && session ) throw redirect({to:"/"})
+        if (!session) throw redirect({ to: AUTH_LOGIN_PATH });
 
-    if(isPublicPath(pathname)) return next()
-
-        if(!session)throw redirect({to:AUTH_LOGIN_PATH});
-
-        return next({context:{session}})
+        return next({ context: { session } })
 
     }
 )
