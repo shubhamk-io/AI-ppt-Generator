@@ -1,6 +1,6 @@
 import { authClient } from '#/lib/auth-client'
 import { Link, useRouter } from '@tanstack/react-router'
-import { LogOut, Moon, Presentation, Sun, User } from 'lucide-react'
+import { LogOut, Moon, Sun, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
@@ -60,13 +60,17 @@ export default function Navbar() {
           
           <div className="flex items-center justify-between px-5 py-3 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 shadow-xl">
 
-            {/* Logo */}
+            {/* ✅ LOGO FIXED */}
             <Link
               to="/"
               className="flex items-center gap-3 no-underline group"
             >
-              <div className="size-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30 group-hover:scale-105 transition">
-                <Presentation className="size-5 text-white" />
+              <div className="size-11 rounded-xl flex items-center justify-center bg-white border border-gray-200 shadow-md group-hover:scale-105 transition">
+                <img
+                  src="/pptlogo.png"
+                  alt="IntelliSlides Logo"
+                  className="w-9 h-9 object-contain"
+                />
               </div>
 
               <span className="text-lg font-semibold tracking-tight">

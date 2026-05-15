@@ -1,4 +1,3 @@
-
 import { Button } from '#/components/ui/button'
 import { Label } from '#/components/ui/label'
 import {
@@ -17,6 +16,7 @@ import {
 } from '#/features/presentation/constant/presentation-options'
 import { getSession } from '#/lib/auth-function'
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { Wand2 } from 'lucide-react'
 import { useState } from 'react'
 
 type HomeFormState = {
@@ -69,7 +69,6 @@ function Home() {
           </p>
         </div>
 
-        {/* 🔥 FIXED: overflow-visible */}
         <div className="glass rounded-3xl p-6 md:p-8 space-y-6 relative overflow-visible">
 
           {/* Background */}
@@ -130,11 +129,13 @@ function Home() {
                   }))
                 }
               >
-                <SelectTrigger className="bg-background/50 border-border/50 rounded-xl relative z-10">
+                {/* ✅ removed relative z-10 */}
+                <SelectTrigger className="bg-background/50 border-border/50 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
 
-                <SelectContent className="glass z-50">
+                
+                <SelectContent position="popper" sideOffset={8} className="glass z-[9999]">
                   {SLIDE_STYLES.map((s) => (
                     <SelectItem key={s.value} value={s.value}>
                       {s.label}
@@ -156,11 +157,13 @@ function Home() {
                   }))
                 }
               >
-                <SelectTrigger className="bg-background/50 border-border/50 rounded-xl relative z-10">
+            
+                <SelectTrigger className="bg-background/50 border-border/50 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
 
-                <SelectContent className="glass z-50">
+                {/* ✅ added position="popper" */}
+                <SelectContent position="popper" sideOffset={8} className="glass z-[9999]">
                   {TONE_OPTIONS.map((t) => (
                     <SelectItem key={t.value} value={t.value}>
                       {t.label}
@@ -170,10 +173,9 @@ function Home() {
               </Select>
             </div>
 
-            {/* ✅ FIXED Layout */}
-            <div className="space-y-2.5 relative">
+            {/* Layout */}
+            <div className="space-y-2.5">
               <Label>Layout</Label>
-
               <Select
                 value={form.layout}
                 onValueChange={(value) =>
@@ -183,16 +185,13 @@ function Home() {
                   }))
                 }
               >
-                <SelectTrigger className="bg-background/50 border-border/50 rounded-xl relative z-10">
+                
+                <SelectTrigger className="bg-background/50 border-border/50 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
 
-                <SelectContent
-                  side="bottom"
-                  align="start"
-                  sideOffset={8}
-                  className="glass z-50"
-                >
+              
+                <SelectContent position="popper" sideOffset={8} className="glass z-[9999]">
                   {LAYOUT_OPTIONS.map((l) => (
                     <SelectItem key={l.value} value={l.value}>
                       {l.label}
@@ -201,32 +200,19 @@ function Home() {
                 </SelectContent>
               </Select>
             </div>
+            
 
           </div>
-
-
-
-          {/* Button */}
-          {/* <div className="flex justify-end pt-2">
-            <Button
-              size="lg"
-              onClick={handleGenerate}
-              disabled={createMut.isPending || !form.content.trim()}
-              className="rounded-xl px-8 gap-2 font-semibold"
-            >
-              {createMut.isPending ? (
-                <>
-                  <Sparkles className="size-5 animate-pulse" />
-                  Creating…
-                </>
-              ) : (
-                <>
-                  <Wand2 className="size-5" />
-                  Generate PPT
-                </>
-              )}
-            </Button>
-          </div> */}
+          <div className='flex justify-end pt-2 '>
+<Button 
+size={'lg'}
+onClick={()=> {}}
+className='rounded-xl px-8 gap-2 font-semibold'
+style={{backgroundColor:"#78CF00"}}>
+   <Wand2 size={5} />
+  Generate PPT
+</Button>
+</div>
 
         </div>
       </div>
