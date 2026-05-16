@@ -7,13 +7,13 @@ import {
   SelectTrigger,
   SelectValue
 } from '#/components/ui/select'
-import { Slider } from '#/components/ui/slider'
 import { Textarea } from '#/components/ui/textarea'
 import {
   LAYOUT_OPTIONS,
   SLIDE_STYLES,
   TONE_OPTIONS
 } from '#/features/presentation/constant/presentation-options'
+import { PRESENTATION_TEMPLATES } from '#/features/presentation/constant/presentation-template'
 import { getSession } from '#/lib/auth-function'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Wand2 } from 'lucide-react'
@@ -52,6 +52,11 @@ function Home() {
     layout: 'balanced'
   })
 
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
+
+  const SLIDE_MIN = 3
+  const SLIDE_MAX = 20
+
   return (
     <main className="min-h-screen pt-24 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
@@ -69,15 +74,11 @@ function Home() {
           </p>
         </div>
 
-        <div className="glass rounded-3xl p-6 md:p-8 space-y-6 relative overflow-visible">
-
-          {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-blue-500/10 opacity-60 blur-2xl pointer-events-none" />
+        {/* Main Card */}
+        <div className="glass rounded-3xl p-6 md:p-8 space-y-6">
 
           {/* Textarea */}
-          <div className="space-y-2 relative group">
-            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-pink-500/30 via-purple-500/30 to-blue-500/30 opacity-0 group-hover:opacity-100 blur-lg transition duration-500" />
-
+          <div className="space-y-2">
             <Textarea
               placeholder="Describe your presentation topic..."
               value={form.content}
@@ -87,11 +88,11 @@ function Home() {
                   content: e.target.value
                 }))
               }
-              className="relative z-10 h-[200px] rounded-2xl resize-none bg-background/60 border border-white/20 backdrop-blur-lg px-4 py-3 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-pink-400/50"
+              className="h-[200px] rounded-2xl resize-none bg-background/60 border border-white/20 backdrop-blur-lg px-4 py-3 overflow-y-scroll no-scrollbar"
             />
 
             <div className="flex justify-between text-xs text-muted-foreground px-1">
-              <span>{form.content.length.toLocaleString()} characters</span>
+              <span>{form.content.length} characters</span>
               <span className="text-purple-400/80">Markdown supported</span>
             </div>
           </div>
@@ -102,18 +103,18 @@ function Home() {
             {/* Slides */}
             <div className="space-y-2.5">
               <Label>Slides: {form.slideCount}</Label>
-              <Slider
-                value={[form.slideCount]}
-                onValueChange={([v]) =>
+              <input
+                type="range"
+                min={SLIDE_MIN}
+                max={SLIDE_MAX}
+                value={form.slideCount}
+                onChange={(e) =>
                   setForm((s) => ({
                     ...s,
-                    slideCount: v
+                    slideCount: Number(e.target.value)
                   }))
                 }
-                min={3}
-                max={20}
-                step={1}
-                className="py-2"
+                className="w-full accent-lime-500"
               />
             </div>
 
@@ -129,13 +130,17 @@ function Home() {
                   }))
                 }
               >
-                {/* ✅ removed relative z-10 */}
-                <SelectTrigger className="bg-background/50 border-border/50 rounded-xl">
+                <SelectTrigger className="rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
-
-                
-                <SelectContent position="popper" sideOffset={8} className="glass z-[9999]">
+                <SelectContent
+                  position="popper"
+                  side="top"
+                  align="start"
+                  sideOffset={6}
+                  avoidCollisions={false}
+                  className="z-[9999] w-[--radix-select-trigger-width]"
+                >
                   {SLIDE_STYLES.map((s) => (
                     <SelectItem key={s.value} value={s.value}>
                       {s.label}
@@ -157,13 +162,17 @@ function Home() {
                   }))
                 }
               >
-            
-                <SelectTrigger className="bg-background/50 border-border/50 rounded-xl">
+                <SelectTrigger className="rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
-
-                {/* ✅ added position="popper" */}
-                <SelectContent position="popper" sideOffset={8} className="glass z-[9999]">
+                <SelectContent
+                  position="popper"
+                  side="top"
+                  align="start"
+                  sideOffset={6}
+                  avoidCollisions={false}
+                  className="z-[9999] w-[--radix-select-trigger-width]"
+                >
                   {TONE_OPTIONS.map((t) => (
                     <SelectItem key={t.value} value={t.value}>
                       {t.label}
@@ -185,13 +194,17 @@ function Home() {
                   }))
                 }
               >
-                
-                <SelectTrigger className="bg-background/50 border-border/50 rounded-xl">
+                <SelectTrigger className="rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
-
-              
-                <SelectContent position="popper" sideOffset={8} className="glass z-[9999]">
+                <SelectContent
+                  position="popper"
+                  side="top"
+                  align="start"
+                  sideOffset={6}
+                  avoidCollisions={false}
+                  className="z-[9999] w-[--radix-select-trigger-width]"
+                >
                   {LAYOUT_OPTIONS.map((l) => (
                     <SelectItem key={l.value} value={l.value}>
                       {l.label}
@@ -200,21 +213,63 @@ function Home() {
                 </SelectContent>
               </Select>
             </div>
-            
 
           </div>
-          <div className='flex justify-end pt-2 '>
-<Button 
-size={'lg'}
-onClick={()=> {}}
-className='rounded-xl px-8 gap-2 font-semibold'
-style={{backgroundColor:"#78CF00"}}>
-   <Wand2 size={5} />
-  Generate PPT
-</Button>
-</div>
+
+          {/* Generate Button */}
+          <div className="flex justify-end pt-2">
+            <Button
+              size="lg"
+              className="rounded-xl px-8 gap-2 font-semibold text-white 
+              bg-gradient-to-r from-lime-400 to-emerald-500 
+              hover:from-lime-500 hover:to-emerald-600 
+              shadow-md hover:shadow-lg transition-all"
+            >
+              <Wand2 size={16} />
+              Generate PPT
+            </Button>
+          </div>
 
         </div>
+
+        {/* Templates */}
+        <div className="mt-6">
+          <p className="text-center text-sm text-muted-foreground mb-4">
+            Try a Template
+          </p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {PRESENTATION_TEMPLATES.map((template) => {
+              const isActive = selectedTemplate === template.id
+
+              return (
+                <button
+                  key={template.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedTemplate(template.id)
+                    setForm({
+                      content: template.content,
+                      slideCount: template.slides,
+                      style: template.style,
+                      tone: template.tone,
+                      layout: template.layout
+                    })
+                  }}
+                  className={`w-full px-3 py-2 text-sm rounded-xl border transition-all
+                  ${
+                    isActive
+                      ? 'bg-gradient-to-r from-lime-400 to-emerald-500 text-white scale-[1.03] shadow-md'
+                      : 'border-border/50 bg-card/50 text-muted-foreground hover:text-foreground hover:border-primary/50 hover:bg-primary/5'
+                  }`}
+                >
+                  {template.label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
       </div>
     </main>
   )

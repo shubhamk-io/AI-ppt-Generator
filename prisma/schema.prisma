@@ -79,3 +79,24 @@ model Verification {
   @@index([identifier])
   @@map("verification")
 }
+
+enum presentationStatus {
+  DRAFT
+  GENERATING
+  COMPLETED
+  FAILED
+}
+
+model presentationStatus {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete:Cascade)
+
+  title String
+  prompt String @db.Text
+  slideCount Int
+  style String
+  tone String
+  layout String
+  status presentationStatus @default(DRAFT)
+}
