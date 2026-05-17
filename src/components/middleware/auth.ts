@@ -1,29 +1,44 @@
-import { auth } from "#/lib/auth";
-import { AUTH_LOGIN_PATH, isLoginPath, isPublicPath } from "#/lib/auth-path";
-import { createMiddleware } from "@tanstack/react-start";
-import { getRequestHeaders } from "@tanstack/react-start/server";
-import { redirect } from "@tanstack/react-router";
+import { auth } from '@/lib/auth'
+import {
+  AUTH_LOGIN_PATH,
+  isLoginPath,
+  isPublicPath,
+} from '#/lib/auth-path'
+import { redirect } from '@tanstack/react-router'
 
+import { createMiddleware } from '@tanstack/react-start'
+import { getRequestHeaders } from '@tanstack/react-start/server'
 
-export const authMiddleware = createMiddleware({ type: "request" }).server(
-    async ({ request, next }) => {
+// Kept here so it’s obvious what we consider public.
+// `isPublicPath` is the actual check used below.
+// (List lives in `src/lib/auth-paths.ts`)
 
-        const { pathname } = new URL(request.url)
-        const headers = getRequestHeaders();
+export const authFnMiddleware = createMiddleware({ type: 'function' }).server(
+  async ({ next }) => {
+    const headers = getRequestHeaders()
+    const session = await auth.api.getSession({ headers })
 
-        const session = await auth.api.getSession({ headers })
+    if (!session) throw redirect({ to: AUTH_LOGIN_PATH })
 
-        if (isLoginPath(pathname)){
-            if(session)throw redirect({to:"/"});
-            return next()
-        }
-        
+    return next({ context: { session } })
+  },
+)
 
-        if (isPublicPath(pathname)) return next()
+export const authMiddleware = createMiddleware({ type: 'request' }).server(
+  async ({ request, next }) => {
+    const { pathname } = new URL(request.url)
+    const headers = getRequestHeaders()
+    const session = await auth.api.getSession({ headers })
 
-        if (!session) throw redirect({ to: AUTH_LOGIN_PATH });
+    // logged-in users should not visit login
+    if (isLoginPath(pathname) && session) throw redirect({ to: '/' })
 
-        return next({ context: { session } })
+    // allow public paths
+    if (isPublicPath(pathname)) return next()
 
-    }
+    // protect everything else
+    if (!session) throw redirect({ to: AUTH_LOGIN_PATH })
+
+    return next({ context: { session } })
+  },
 )
