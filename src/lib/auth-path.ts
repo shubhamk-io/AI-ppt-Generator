@@ -9,5 +9,5 @@ export function isPublicPath(pathname: string) {
 }
 
 export function isLoginPath(pathname: string) {
-  return pathname.startsWith(AUTH_LOGIN_PATH)
+  return pathname === "/login"
 }

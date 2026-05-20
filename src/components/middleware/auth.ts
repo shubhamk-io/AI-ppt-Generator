@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth'
+import { auth } from '#/lib/auth'
 import {
   AUTH_LOGIN_PATH,
   isLoginPath,

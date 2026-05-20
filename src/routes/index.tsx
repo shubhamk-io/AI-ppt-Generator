@@ -1,5 +1,6 @@
 import { Button } from '#/components/ui/button'
 import { Label } from '#/components/ui/label'
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Select,
   SelectContent,
@@ -15,9 +16,12 @@ import {
 } from '#/features/presentation/constant/presentation-options'
 import { PRESENTATION_TEMPLATES } from '#/features/presentation/constant/presentation-template'
 import { getSession } from '#/lib/auth-function'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { Wand2 } from 'lucide-react'
 import { useState } from 'react'
+import { createPresentation } from '#/features/actions/presentation-mutation';
+import { toast } from 'sonner';
+import { presentationQueryKeys } from '#/features/hooks/query-keys';
 
 type HomeFormState = {
   content: string
@@ -44,6 +48,8 @@ export const Route = createFileRoute('/')({
 })
 
 function Home() {
+  const queryClinet = useQueryClient()
+  const navigate = useNavigate()
   const [form, setForm] = useState<HomeFormState>({
     content: '',
     slideCount: 8,
@@ -51,6 +57,40 @@ function Home() {
     tone: 'formal',
     layout: 'balanced'
   })
+
+
+  const creatMute = useMutation({
+    mutationFn:() => createPresentation({
+      data:{
+        prompt: form.content.trim(),
+        slideCount: form.slideCount,
+        style: form.style,
+        tone: form.tone,
+        layout:form.layout
+      }
+    }),
+    onSuccess:(presentation)=>{
+      toast.success("Presentation created")
+      queryClinet.invalidateQueries({queryKey:presentationQueryKeys.list()})
+      navigate({
+        to:"/presentation-$presentationId",
+        params:{presentationId:presentation.id}
+      })
+    },
+    onError:(Error)=>{
+      toast.error("Could not create presentation")
+    }
+  })
+
+  const handlCreate = ( ) => {
+    if(!form.content.trim()){
+      toast.error("Please enter your content first")
+      return;
+
+    };
+    
+    creatMute.mutate()
+  }
 
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
 
@@ -219,6 +259,8 @@ function Home() {
           {/* Generate Button */}
           <div className="flex justify-end pt-2">
             <Button
+            onClick={handlCreate}
+            disabled={creatMute.isPending || !form.content.trim()}
               size="lg"
               className="rounded-xl px-8 gap-2 font-semibold text-white 
               bg-gradient-to-r from-lime-400 to-emerald-500 
